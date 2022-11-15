@@ -26,5 +26,8 @@
     "sass": "^1.55.0",
     "typescript": "4.8.4",
     "yup": "^0.32.11"
+  },
+  "devDependencies": {
+    "esbuild": "^0.15.14"
   }
 }

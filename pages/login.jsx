@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthUserContext';
 
-function login() {
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -76,4 +76,4 @@ function login() {
   );
 }
 
-export default login;
+export default Login;
