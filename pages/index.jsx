@@ -1,18 +1,34 @@
 import Head from "next/head";
 import Image from "next/image";
-import { useAuth } from "../context/AuthUserContext";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../lib/firebase";
+
 
 export default function Home() {
-  const { authUser, loading, signout } = useAuth();
+  const [user, setUser] = useState(null)
+  // const { authUser, loading, signout } = useAuth();
   const router = useRouter();
-
+  const HandleSignout = () => {
+    signOut(auth).then(() => {
+      // Sign-out successful.
+    }).catch((error) => {
+      // An error happened.
+    });
+  }
   // Listen for changes on loading and authUser, redirect if needed
   useEffect(() => {
-    if (!authUser) router.push("/login");
-  }, [authUser, loading, router]);
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/login");
+      }
+      setUser(user)
 
+    })
+
+  }, [auth, router]);
+  console.log(user)
   return (
     <div>
       <Head>
@@ -22,10 +38,14 @@ export default function Home() {
       </Head>
 
       <main className="container">
-        {authUser && (
-          <div>Congratulations {authUser?.email}! You are logged in.</div>
+        {user && (
+          <div>
+            {/* {JSON.stringify(user, null, 2)} */}
+            <p>Congratulations {user?.displayName} ! You are logged in.</p>
+
+          </div>
         )}
-        <button onClick={signout}>Sign out</button>
+        <button onClick={HandleSignout}>Sign out</button>
       </main>
     </div>
   );

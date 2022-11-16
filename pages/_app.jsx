@@ -2,7 +2,6 @@
 import Header from "../components/Layout/Header";
 import Footer from "../components/Layout/Footer";
 /* The following line can be included in a src/App.scss */
-import { AuthUserProvider } from "../context/AuthUserContext";
 
 // import "~bootstrap/scss/bootstrap";
 
@@ -15,9 +14,9 @@ export default function App({ Component, pageProps }) {
     import("bootstrap/dist/js/bootstrap");
   }, []);
   return (
-    <AuthUserProvider>
+    <>
       <Header />
       <Component {...pageProps} /> <Footer />
-    </AuthUserProvider>
+    </>
   );
 }

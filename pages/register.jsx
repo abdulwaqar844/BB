@@ -1,41 +1,66 @@
 import Link from "next/link";
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-
-import { useAuth } from '../context/AuthUserContext';
-
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import {
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { auth } from "./../lib/firebase";
+import Head from "next/head";
 function Register() {
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
   const [passwordOne, setPasswordOne] = useState("");
   const [passwordTwo, setPasswordTwo] = useState("");
-  const router = useRouter();
-  //Optional error handling
   const [error, setError] = useState(null);
+  const router = useRouter();
 
-  const { createUser  , authUser, loading} = useAuth();
-  const HandleSubmit = event => {
+  const HandleSubmit = (event) => {
+    setLoading(true);
     event.preventDefault();
-    setError(null)
-    if (passwordOne === passwordTwo)
-    createUser(email, passwordOne)
-        .then(authUser => {
-          //  updateProfile(auth.currentUser, { displayName: name }).catch(
-          //   (err) => console.log(err)
-          // );
-          console.log("Success. The user is created in firebase")
+    if (passwordOne === passwordTwo) {
+      createUserWithEmailAndPassword(auth, email, passwordOne)
+        .then((userCredential) => {
+          updateProfile(auth.currentUser, {
+            displayName: name,
+          });
+          setLoading(false);
           router.push("/");
+          const user = userCredential.user;
+          // ...
         })
-        .catch(error => {
-          setError(error.message)
+        .catch((error) => {
+          setLoading(false);
+          const errorCode = error.code;
+          if (errorCode === "auth/email-already-in-use") {
+            setError("Email already in use");
+          }
         });
-    else
-      setError("Password do not match")
+    } else {
+      setError("Password does not match");
+    }
   };
+  setTimeout(() => {
+    setError(null);
+  }, 9000);
+  console.log(loading);
+
   useEffect(() => {
-    if (authUser)
-      router.push('/')
-  }, [authUser, loading ])
-  return (
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.push("/");
+        // const uid = user.uid;
+        // ...
+      }
+    });
+    // if (authUser) router.push("/");
+  }, [loading, router]);
+  return (<>
+    <Head>
+      <title>Register Now</title>
+    </Head>
     <div className="container text-center">
       <div className="form-signin w-100 m-auto pt-5">
         <form onSubmit={HandleSubmit}>
@@ -51,20 +76,20 @@ function Register() {
             <input
               type="text"
               className="form-control"
-              id="floatingInput"
               placeholder="Name"
               name="name"
+              onChange={(event) => setName(event.target.value)}
             />
             <label htmlFor="floatingInput">Name</label>
           </div>
-
           <div className="form-floating mb-2">
             <input
+              readOnly={loading}
               type="email"
               className="form-control"
-              id="floatingInput"
               placeholder="name@example.com"
-              name="email" onChange={(event) => setEmail(event.target.value)}
+              name="email"
+              onChange={(event) => setEmail(event.target.value)}
             />
             <label htmlFor="floatingInput">Email address</label>
           </div>
@@ -72,28 +97,30 @@ function Register() {
             <input
               type="password"
               className="form-control"
-              id="floatingPassword"
               placeholder="Password"
               name="passwordOne"
               onChange={(event) => setPasswordOne(event.target.value)}
             />
             <label htmlFor="floatingPassword">Password</label>
-          </div>    <div className="form-floating mb-2">
+          </div>{" "}
+          <div className="form-floating mb-2">
             <input
               type="password"
               className="form-control"
-              id="floatingPassword"
               placeholder="Password"
-              name="passwordTow" onChange={(event) => setPasswordTwo(event.target.value)}
-
+              name="passwordTow"
+              onChange={(event) => setPasswordTwo(event.target.value)}
             />
             <label htmlFor="floatingPassword">Re-Enter Password</label>
           </div>
-
-          <button className="w-100 btn btn-lg btn-primary" type="submit">
+          <p className="text-danger">{error} </p>
+          <button
+            disabled={loading}
+            className="w-100 btn btn-lg btn-primary"
+            type="submit"
+          >
             Register Now
           </button>
-
           <div className="pt-5">
             <Link href="/register" className="mt-5 mb-3 text-muted">
               <span className="nav-link active h4 ">
@@ -103,7 +130,7 @@ function Register() {
           </div>
         </form>
       </div>
-    </div>
+    </div>  </>
   );
 }
 
