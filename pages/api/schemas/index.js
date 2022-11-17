@@ -6,24 +6,38 @@ export const typeDefs = gql`
     login: String
     avatar_url: String
   }
-
+  enum MoodTypes {
+    Dizzy
+    Frown
+    FrownOpen
+    GrinHearts
+    Laugh
+    Meh
+    Smile
+  }
+  type Mood {
+    date: String!
+    type: MoodTypes!
+  }
   type Query {
     getUsers: [User]
     getUser(name: String!): User!
   }
   type Mutation {
-    addHabit(title: String!, description: String!): String
-    setDailyHabit(habitId: ID!, done: Boolean!, date: String!): String
-    setMood(date: String!, type: String!) :String
+    createHabit(
+      title: String!
+      description: String!
+      starred: Boolean!
+      userID: ID!
+    ): String
+    setDailyHabit(habitId: ID!, date: String!, userID: ID!): String
+    setMood(date: String = "2019-07-23", type: MoodTypes!, owner: String!): Mood
   }
 `;
 
 //     import { gql } from "apollo-server-micro";
 
 // export const typeDefs = gql`
-
-
-
 
 //   query me {
 //     me {
@@ -74,7 +88,6 @@ export const typeDefs = gql`
 //       date
 //     }
 //   }
-
 
 //   //For changing the date for the current month + refreshing
 
