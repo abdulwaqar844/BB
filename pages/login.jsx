@@ -32,7 +32,7 @@ function Login() {
       .catch((error) => {
         setLoading(false);
         const errorCode = error.code;
-        console.log(errorCode);
+      
         if (errorCode === "auth/wrong-password") {
           setError("Incorrect Password ");
           //  block of code to be executed if condition1 is true

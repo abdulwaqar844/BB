@@ -1,7 +1,7 @@
 import { days } from "../utils/dayjs";
 import DayHabitSquare from "./DayHabitSquare";
 const DayHabit = ({ habits, habitId }) => {
-  //   console.log(habits);
+ 
   const getHabitList = () => {
     return days.map(({ date, disabled }) => {
       const index = habits.findIndex((habit) => habit.date.startsWith(date));
@@ -19,28 +19,11 @@ const DayHabit = ({ habits, habitId }) => {
     });
   };
   const data = getHabitList();
-  //   const data = ({}) => {
-  //     return days.map(({ date, disabled }) => {
-  //       const index = dayHabit.findIndex((habit) => habit.date.startsWith(date));
-  //       return index !== -1
-  //         ? {
-  //             ...dayHabit[index],
-  //             disabled,
-  //           }
-  //         : {
-  //             id: `${date}-${habitId}`,
-  //             done: false,
-  //             date,
-  //             disabled,
-  //           };
-  //     });
-  //   };
-  //   console.log(data);
 
   return (
-    <div className="d-flex">
-      {data?.map((day) => {
-        return <DayHabitSquare day={day} key={day.id} />;
+    <div className="d-flex flex-wrap">
+      {data?.map((day , index) => {
+        return <DayHabitSquare day={day} key={index} />;
       })}
     </div>
   );

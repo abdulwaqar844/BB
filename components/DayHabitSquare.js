@@ -1,5 +1,5 @@
 function DayHabitSquare({ day }) {
-  console.log(day);
+  
   const { done, disabled } = day;
   let bg;
   if (disabled) {
@@ -9,7 +9,7 @@ function DayHabitSquare({ day }) {
   } else {
     bg = "white";
   }
-  console.log(bg);
+
   return (
     <div
       style={{
@@ -22,8 +22,8 @@ function DayHabitSquare({ day }) {
         fontSize: "20px",
         background: bg,
         color: day.done ? "white" : "black",
-        marginLeft: "2px",
-        marginRight: "2px",
+        margin: "3px",
+       
       }}
     >
       <p>{new Date(day.date).getDate()} </p>

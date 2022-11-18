@@ -32,8 +32,8 @@ export default function Home() {
       setUser(user);
       localStorage.setItem("userID", user.uid);
     });
-  }, [auth, router]);
-  console.log(data);
+  }, [router]);
+
   if (loading) return <p>Loading...</p>;
   return (
     <div>
@@ -45,15 +45,14 @@ export default function Home() {
 
       <main className="container">
         {data &&
-          data.habits.map((habit) => {
-            return <div className=" px-5 py-4">
-              <Habits habit={habit} />
-            </div>
+          data.habits.map((habit, index) => {
+            return (
+              <div className=" px-5 py-4" key={index}>
+                <Habits habit={habit}  />
+              </div>
+            );
           })}
       </main>
     </div>
   );
 }
-
-
-
