@@ -8,7 +8,6 @@ import { useQuery } from "@apollo/client";
 import GET_ALL_USER_HABIT from "../lib/apollo/queries/getHabits";
 import Habits from "../components/Habits";
 
-Modal.setAppElement('#yourAppElement');
 
 export default function Home() {
   const [user, setUser] = useState(null);
