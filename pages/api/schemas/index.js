@@ -15,13 +15,30 @@ export const typeDefs = gql`
     Meh
     Smile
   }
+  type DayHabit {
+    date: String!
+    done: Boolean!
+    id: ID!
+  }
+  type Habit {
+    id: String!
+    description: String
+    title: String!
+    habits(
+      after: String
+      before: String
+      first: Int
+      last: Int
+      skip: Int
+    ): [DayHabit!]
+    starred: Boolean!
+  }
   type Mood {
     date: String!
     type: MoodTypes!
   }
   type Query {
-    getUsers: [User]
-    getUser(name: String!): User!
+    habits(userID: String!, first: Int!): [Habit!]
   }
   type Mutation {
     createHabit(
@@ -31,7 +48,8 @@ export const typeDefs = gql`
       userID: ID!
     ): String
     setDailyHabit(habitId: ID!, date: String!, userID: ID!): String
-    setMood(date: String = "2019-07-23", type: MoodTypes!, owner: String!): Mood
+    deleteHabit(habitId: ID!): String
+    setMood(date: String , type: MoodTypes!, userID: String!): Mood
   }
 `;
 
@@ -53,16 +71,16 @@ export const typeDefs = gql`
 //       type
 //       date
 //     }
-//     habits(first: 5) {
-//       title
-//       description
-//       starred
-//       habits(first: 5, orderBy: date_DESC) {
-//         id
-//         date
-//         done
-//       }
-//     }
+// habits(first: 5) {
+//   title
+//   description
+//   starred
+//   habits(first: 5, orderBy: date_DESC) {
+//     id
+//     date
+//     done
+//   }
+// }
 //   }
 
 //   query getHabits {

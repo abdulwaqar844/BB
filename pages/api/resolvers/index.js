@@ -1,3 +1,4 @@
+import { async } from "@firebase/util";
 import axios from "axios";
 import {
   collection,
@@ -9,33 +10,32 @@ import {
   setDoc,
   updateDoc,
   arrayUnion,
+  getDocs,
+  limit,
+  deleteDoc,
 } from "firebase/firestore";
 
 import { db } from "./../../../lib/firebase";
 export const resolvers = {
   Query: {
-    getUsers: async () => {
+    habits: async (_, args) => {
       try {
-        const users = await axios.get("https://api.github.com/users");
-        return users.data.map(({ id, login, avatar_url }) => ({
-          id,
-          login,
-          avatar_url,
-        }));
-      } catch (error) {
-        throw error;
-      }
-    },
-    getUser: async (_, args) => {
-      try {
-        const user = await axios.get(
-          `https://api.github.com/users/${args.name}`
+        let result = [];
+        const q = query(
+          collection(db, "DailyHabits"),
+          where("userID", "==", args.userID),
+          limit(args.frist || 5)
         );
-        return {
-          id: user.data.id,
-          login: user.data.login,
-          avatar_url: user.data.avatar_url,
-        };
+
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          console.log(doc.id);
+          const habit = doc.data();
+          habit.id = doc.id;
+          result.push(habit);
+        });
+
+        return result;
       } catch (error) {
         throw error;
       }
@@ -50,7 +50,6 @@ export const resolvers = {
           title: args.title,
           description: args.description,
         });
-        console.log("Document written with ID: ", docRef.id);
         return docRef.id;
       } catch (error) {
         throw error;
@@ -60,7 +59,6 @@ export const resolvers = {
     setDailyHabit: async (_, args) => {
       try {
         const formatedDate = new Date(args.date).toISOString().split("T")[0];
-        console.log(args, formatedDate);
         const res = await getDoc(doc(db, "DailyHabits", args.habitId));
         if (res.data().habits && res.data().habits.length > 0) {
           const { habits } = res.data();
@@ -80,7 +78,7 @@ export const resolvers = {
                 done: true,
               }),
             });
-            // console.log(res);
+
             return "When the habit with older date not exit";
           } else {
             await updateDoc(doc(db, "DailyHabits", args.habitId), {
@@ -103,26 +101,6 @@ export const resolvers = {
           return "When the habit is  new created";
         }
 
-        // const habitsRef = collection(db, "DailyHabits");
-        // console.log("Habit Ref", habitsRef);
-        // const q = query(habitsRef, where("date", "==", formatedDate));
-
-        // console.log("query", q);
-        // const res = await getDoc(doc(db, "Habits", args.habitId));
-
-        // if (res.exists()) {
-        //   console.log(res.data());
-        // }
-
-        // console.log("Args", args);
-        // const docRef = await addDoc(collection(db, "DailyHabits"), {
-        //   userID: args.userID,
-
-        //   habitId: args.habitId,
-        //   done:
-        //   date: args.date,
-        // });
-        // console.log("Document written with ID: ", res);
         return args.habitId;
       } catch (error) {
         throw error;
@@ -130,12 +108,53 @@ export const resolvers = {
     },
     setMood: async (_, args) => {
       try {
-        const docRef = await addDoc(collection(db, "DailyMood"), {
-          type: args.type,
-          date: args.date,
+        const formatedDate = new Date(args.date).toISOString().split("T")[0];
+
+        // const res = query(
+        //   collection(db, "DailyMood"),
+        //   where("date", "==", formatedDate),
+        //   where("userID", "==", args.userID)
+        // );
+        // const querySnapshot = await getDocs(res);
+        // querySnapshot.forEach((doc) => {
+        //   const data = doc.data();
+        //   if (data.date === formatedDate && data.userID === args.userID) {
+        //     // console.log(
+        //     //   data.date === formatedDate
+        //     // );
+
+        //     console.log("update");
+        //     updateDoc(doc(db, "DailyMood", doc.id), {
+        //       mood: args.mood,
+        //     });
+        //   } else {
+        //     console.log("add");
+           await addDoc(collection(db, "DailyMood"), {
+              date: formatedDate,
+              mood: args.type,
+              userID: args.userID,
+          //   });
+          // }
+          // console.log("Data", data);
         });
-        console.log("Document written with ID: ", docRef.id);
-        return docRef.id;
+
+        // const docRef = await addDoc(collection(db, "DailyMood"), {
+        //   type: args.type,
+        //   date: formatedDate,
+        //   userID: args.userID,
+        // });
+        return {
+          type: args.type,
+          date: formatedDate,
+        };
+      } catch (error) {
+        throw error;
+      }
+    },
+    deleteHabit: async (_, args) => {
+      try {
+        await deleteDoc(doc(db, "DailyHabits", args.habitId));
+        return `Habit ID: ${args.habitId} is deleted`;
       } catch (error) {
         throw error;
       }
