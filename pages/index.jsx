@@ -12,18 +12,18 @@ export default function Home() {
   const { loading, data } = useQuery(
     GET_ALL_USER_HABIT,
     {
-      variables: { userID: "OekgvAyGIbRoEBYZAOZJOTm8JaA3", first: 5 },
+      variables: { userID: user.uid, first: 5 },
     },
     {
       fetchPolicy: "no-cache",
     }
   );
   const router = useRouter();
-  const HandleSignout = () => {
-    signOut(auth)
-      .then(() => { })
-      .catch((error) => { });
-  };
+  // const HandleSignout = () => {
+  //   signOut(auth)
+  //     .then(() => { })
+  //     .catch((error) => { });
+  // };
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (!user) {
@@ -32,7 +32,7 @@ export default function Home() {
       setUser(user);
       localStorage.setItem("userID", user.uid);
     });
-  }, [router]);
+  }, [router, loading, data]);
 
   if (loading) return <p>Loading...</p>;
   return (
@@ -48,7 +48,7 @@ export default function Home() {
           data.habits.map((habit, index) => {
             return (
               <div className=" px-5 py-4" key={index}>
-                <Habits habit={habit}  />
+                <Habits habit={habit} />
               </div>
             );
           })}

@@ -29,7 +29,7 @@ export const resolvers = {
 
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-          console.log(doc.id);
+      
           const habit = doc.data();
           habit.id = doc.id;
           result.push(habit);
@@ -110,32 +110,11 @@ export const resolvers = {
       try {
         const formatedDate = new Date(args.date).toISOString().split("T")[0];
 
-        // const res = query(
-        //   collection(db, "DailyMood"),
-        //   where("date", "==", formatedDate),
-        //   where("userID", "==", args.userID)
-        // );
-        // const querySnapshot = await getDocs(res);
-        // querySnapshot.forEach((doc) => {
-        //   const data = doc.data();
-        //   if (data.date === formatedDate && data.userID === args.userID) {
-        //     // console.log(
-        //     //   data.date === formatedDate
-        //     // );
-
-        //     console.log("update");
-        //     updateDoc(doc(db, "DailyMood", doc.id), {
-        //       mood: args.mood,
-        //     });
-        //   } else {
-        //     console.log("add");
            await addDoc(collection(db, "DailyMood"), {
               date: formatedDate,
               mood: args.type,
               userID: args.userID,
-          //   });
-          // }
-          // console.log("Data", data);
+  
         });
 
         // const docRef = await addDoc(collection(db, "DailyMood"), {
