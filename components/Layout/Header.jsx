@@ -1,4 +1,4 @@
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -10,7 +10,6 @@ function BasicExample() {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log(authUser)
         setauthUser(user);
         // const uid = user.uid;u
         // ...
@@ -20,6 +19,13 @@ function BasicExample() {
     }, [router, authUser]);
     // if (authUser) router.push("/");
   });
+  const HandleSignout = () => {
+    signOut(auth)
+      .then(() => {
+        localStorage.removeItem("userID");
+      })
+      .catch((error) => { });
+  };
   return (
     <nav className="navbar navbar-expand-lg bg-light">
       <div className="container-fluid">
@@ -45,20 +51,12 @@ function BasicExample() {
                   Home
                 </Link>
               </li>
+
               <li className="nav-item">
-                <Link href="/mood" className="nav-link active">
-                  Mood
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link href="/habit" className="nav-link active">
-                  Habit
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link href="/logout" className="nav-link active">
+                <button
+                  onClick={HandleSignout} className="btn-danger btn">
                   Logout
-                </Link>
+                </button>
               </li>
             </ul>
           ) : (

@@ -4,31 +4,37 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
-
-
+import { useQuery } from "@apollo/client";
+import GET_ALL_USER_HABIT from "../lib/apollo/queries/getHabits";
+import Habits from "../components/Habits";
 export default function Home() {
-  const [user, setUser] = useState(null)
-  // const { authUser, loading, signout } = useAuth();
+  const [user, setUser] = useState(null);
+  const { loading, data } = useQuery(
+    GET_ALL_USER_HABIT,
+    {
+      variables: { userID: "OekgvAyGIbRoEBYZAOZJOTm8JaA3", first: 5 },
+    },
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
   const router = useRouter();
   const HandleSignout = () => {
-    signOut(auth).then(() => {
-      // Sign-out successful.
-    }).catch((error) => {
-      // An error happened.
-    });
-  }
-  // Listen for changes on loading and authUser, redirect if needed
+    signOut(auth)
+      .then(() => { })
+      .catch((error) => { });
+  };
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         router.push("/login");
       }
-      setUser(user)
-
-    })
-
+      setUser(user);
+      localStorage.setItem("userID", user.uid);
+    });
   }, [auth, router]);
-  console.log(user)
+  console.log(data);
+  if (loading) return <p>Loading...</p>;
   return (
     <div>
       <Head>
@@ -38,15 +44,16 @@ export default function Home() {
       </Head>
 
       <main className="container">
-        {user && (
-          <div>
-            {/* {JSON.stringify(user, null, 2)} */}
-            <p>Congratulations {user?.displayName} ! You are logged in.</p>
-
-          </div>
-        )}
-        <button onClick={HandleSignout}>Sign out</button>
+        {data &&
+          data.habits.map((habit) => {
+            return <div className=" px-5 py-4">
+              <Habits habit={habit} />
+            </div>
+          })}
       </main>
     </div>
   );
 }
+
+
+
