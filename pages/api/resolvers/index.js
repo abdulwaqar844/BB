@@ -29,7 +29,6 @@ export const resolvers = {
 
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
-      
           const habit = doc.data();
           habit.id = doc.id;
           result.push(habit);
@@ -49,6 +48,7 @@ export const resolvers = {
           starred: args.starred,
           title: args.title,
           description: args.description,
+          habits: [],
         });
         return docRef.id;
       } catch (error) {
@@ -60,46 +60,46 @@ export const resolvers = {
       try {
         const formatedDate = new Date(args.date).toISOString().split("T")[0];
         const res = await getDoc(doc(db, "DailyHabits", args.habitId));
-        if (res.data().habits && res.data().habits.length > 0) {
-          const { habits } = res.data();
-          const DailyHabit = habits.filter(
-            (habit) => habit.date === formatedDate
-          );
-          if (DailyHabit.length === 0) {
-            const newHabit = {
-              id: new Date().getTime(),
-              date: formatedDate,
-              done: true,
-            };
-            await updateDoc(doc(db, "DailyHabits", args.habitId), {
-              habits: arrayUnion({
-                id: new Date().getTime(),
-                date: formatedDate,
-                done: true,
-              }),
-            });
+        // if (res.data().habits && res.data().habits.length > 0) {
+        //   const { habits } = res.data();
+        //   const DailyHabit = habits.filter(
+        //     (habit) => habit.date === formatedDate
+        //   );
+        //   if (DailyHabit.length === 0) {
+        //     const newHabit = {
+        //       id: new Date().getTime(),
+        //       date: formatedDate,
+        //       done: true,
+        //     };
+        //     await updateDoc(doc(db, "DailyHabits", args.habitId), {
+        //       habits: arrayUnion({
+        //         id: new Date().getTime(),
+        //         date: formatedDate,
+        //         done: true,
+        //       }),
+        //     });
 
-            return "When the habit with older date not exit";
-          } else {
-            await updateDoc(doc(db, "DailyHabits", args.habitId), {
-              habits: {
-                done: false,
-              },
-            });
+        //     return "When the habit with older date not exit";
+        //   } else {
+        //     await updateDoc(doc(db, "DailyHabits", args.habitId), {
+        //       habits: {
+        //         done: false,
+        //       },
+        //     });
 
-            return "When the habit is updated with older date";
-          }
-        } else {
-          await updateDoc(doc(db, "DailyHabits", args.habitId), {
-            habits: arrayUnion({
-              id: new Date().getTime(),
-              date: formatedDate,
-              done: true,
-            }),
-          });
+        //     return "When the habit is updated with older date";
+        //   }
+        // } else {
+        await updateDoc(doc(db, "DailyHabits", args.habitId), {
+          habits: arrayUnion({
+            id: new Date().getTime(),
+            date: formatedDate,
+            done: true,
+          }),
+        });
 
-          return "When the habit is  new created";
-        }
+        //   return "When the habit is  new created";
+        // }
 
         return args.habitId;
       } catch (error) {
@@ -110,11 +110,10 @@ export const resolvers = {
       try {
         const formatedDate = new Date(args.date).toISOString().split("T")[0];
 
-           await addDoc(collection(db, "DailyMood"), {
-              date: formatedDate,
-              mood: args.type,
-              userID: args.userID,
-  
+        await addDoc(collection(db, "DailyMood"), {
+          date: formatedDate,
+          mood: args.type,
+          userID: args.userID,
         });
 
         // const docRef = await addDoc(collection(db, "DailyMood"), {

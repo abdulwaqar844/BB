@@ -30,7 +30,7 @@ function BasicExample() {
     <nav className="navbar navbar-expand-lg bg-light">
       <div className="container-fluid">
         <a className="navbar-brand" href="#">
-          Navbar
+          Habit Tracker
         </a>
         <button
           className="navbar-toggler"
@@ -49,6 +49,10 @@ function BasicExample() {
               <li className="nav-item">
                 <Link href="/" className="nav-link active">
                   Home
+                </Link>
+              </li> <li className="nav-item">
+                <Link href="/habit-list" className="nav-link active">
+                  Habit
                 </Link>
               </li>
 

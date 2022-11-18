@@ -5,15 +5,18 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import CREATE_NEW_HABIT from "../lib/apollo/mutations/createHabit";
 import GET_ALL_USER_HABIT from "../lib/apollo/queries/getHabits";
-function CreateHabit({ status, HanldeShowModal }) {
+function EditHabit({ habit, status, HanldeShowModal }) {
   const [habitTitle, setHabitTitle] = useState("");
   const [starred, setStarred] = useState(false);
   const [err, setErr] = useState(false);
   const [habitDescription, setHabitDescription] = useState("");
   const handleClose = () => HanldeShowModal(false);
-  const [createHabit, { data, loading, error }] = useMutation(CREATE_NEW_HABIT , {
-    refetchQueries: [GET_ALL_USER_HABIT],
-  });
+  const [createHabit, { data, loading, error }] = useMutation(
+    CREATE_NEW_HABIT,
+    {
+      refetchQueries: [GET_ALL_USER_HABIT],
+    }
+  );
   const handleSubmit = (e) => {
     if (habitTitle === "") {
       setErr(true);
@@ -52,6 +55,7 @@ function CreateHabit({ status, HanldeShowModal }) {
                 type="text"
                 placeholder="Title"
                 autoFocus
+                defaultValue={habit.title}
               />
             </Form.Group>
             <Form.Group
@@ -61,6 +65,7 @@ function CreateHabit({ status, HanldeShowModal }) {
               <Form.Label>Description</Form.Label>
               <Form.Control
                 as="textarea"
+                defaultValue={habit.description}
                 rows={3}
                 onChange={(e) => setHabitDescription(e.target.value)}
               />
@@ -71,6 +76,7 @@ function CreateHabit({ status, HanldeShowModal }) {
               id="custom-switch"
               label="Starred"
               name="starrted"
+              defaultValue={habit.starred}
               onChange={(e) => setStarred(e.target.checked)}
             />
           </Form>
@@ -82,7 +88,7 @@ function CreateHabit({ status, HanldeShowModal }) {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={handleSubmit}>
-            Create Habit
+            Update Habit
           </Button>
           <Button variant="secondary" onClick={handleClose}>
             Close
@@ -93,4 +99,4 @@ function CreateHabit({ status, HanldeShowModal }) {
   );
 }
 
-export default CreateHabit;
+export default EditHabit;

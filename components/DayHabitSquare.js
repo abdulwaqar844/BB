@@ -1,13 +1,40 @@
-function DayHabitSquare({ day }) {
-  
+import { useMutation } from "@apollo/client";
+import SET_DAILY_HABIT from "../lib/apollo/mutations/setDailyHabit";
+import GET_ALL_USER_HABIT from "../lib/apollo/queries/getHabits";
+
+function DayHabitSquare({ day, habitId }) {
   const { done, disabled } = day;
+
+  const [setDailyHabit, { loading, data, error }] = useMutation(
+    SET_DAILY_HABIT,
+    {
+      refetchQueries: [GET_ALL_USER_HABIT],
+    }
+  );
+
+  const handleSetHabit = () => {
+    if (done) {
+      return;
+    }
+    if (disabled) {
+      return;
+    }
+    setDailyHabit({
+      variables: {
+        habitId,
+        date: day.date,
+        done: !done,
+        userID: "OekgvAyGIbRoEBYZAOZJOTm8JaA3",
+      },
+    });
+  };
   let bg;
   if (disabled) {
-    bg = "gray";
+    bg = "white";
   } else if (done) {
     bg = "green";
   } else {
-    bg = "white";
+    bg = "gray";
   }
 
   return (
@@ -23,10 +50,9 @@ function DayHabitSquare({ day }) {
         background: bg,
         color: day.done ? "white" : "black",
         margin: "3px",
-       
       }}
     >
-      <p>{new Date(day.date).getDate()} </p>
+      <p onDoubleClick={handleSetHabit}>{new Date(day.date).getDate()} </p>
     </div>
   );
 }
