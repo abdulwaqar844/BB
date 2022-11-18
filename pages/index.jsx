@@ -7,6 +7,9 @@ import { auth } from "../lib/firebase";
 import { useQuery } from "@apollo/client";
 import GET_ALL_USER_HABIT from "../lib/apollo/queries/getHabits";
 import Habits from "../components/Habits";
+
+Modal.setAppElement('#yourAppElement');
+
 export default function Home() {
   const [user, setUser] = useState(null);
   const { loading, data } = useQuery(
@@ -19,21 +22,16 @@ export default function Home() {
     }
   );
   const router = useRouter();
-  // const HandleSignout = () => {
-  //   signOut(auth)
-  //     .then(() => { })
-  //     .catch((error) => { });
-  // };
+
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         router.push("/login");
       }
       setUser(user);
-      localStorage.setItem("userID", user.uid);
+      localStorage.setItem("userID", user.id);
     });
   }, [router, loading, data]);
-
   if (loading) return <p>Loading...</p>;
   return (
     <div>
