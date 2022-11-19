@@ -23,7 +23,6 @@ function Login() {
     event.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        console.log("In Login", userCredential.user);
         setLoading(false);
         dispatch({
           type: "LOGGED_IN_USER",
@@ -34,10 +33,8 @@ function Login() {
           },
         })
         router.push("/");
-        console.log("User Credentials", userCredential)
         const user = userCredential.user;
 
-        console.log("User in Singing fin", user)
         // ...
       })
       .catch((error) => {

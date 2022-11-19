@@ -117,7 +117,7 @@ function Register() {
             Register Now
           </button>
           <div className="pt-5">
-            <Link href="/register" className="mt-5 mb-3 text-muted">
+            <Link href="/login" className="mt-5 mb-3 text-muted">
               <span className="nav-link active h4 ">
                 Already Registered! Login
               </span>

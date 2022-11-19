@@ -8,12 +8,9 @@ function DayHabitSquare({ day, habitId }) {
   const { done, disabled } = day;
   const { state, dispatch } = useContext(Context);
 
-  const [setDailyHabit, { loading, data, error }] = useMutation(
-    SET_DAILY_HABIT,
-    {
-      refetchQueries: [GET_ALL_USER_HABIT],
-    }
-  );
+  const [setDailyHabit] = useMutation(SET_DAILY_HABIT, {
+    refetchQueries: [GET_ALL_USER_HABIT],
+  });
 
   const handleSetHabit = () => {
     if (done) {
@@ -32,12 +29,16 @@ function DayHabitSquare({ day, habitId }) {
     });
   };
   let bg;
+  let cursorStyle;
   if (disabled) {
     bg = "white";
+    cursorStyle = "not-allowed";
   } else if (done) {
     bg = "green";
+    cursorStyle = "default";
   } else {
     bg = "gray";
+    cursorStyle = "pointer";
   }
 
   return (
@@ -53,6 +54,8 @@ function DayHabitSquare({ day, habitId }) {
         background: bg,
         color: day.done ? "white" : "black",
         margin: "3px",
+        cursor: cursorStyle,
+      
       }}
     >
       <p onDoubleClick={handleSetHabit}>{new Date(day.date).getDate()} </p>
