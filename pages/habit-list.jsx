@@ -1,36 +1,42 @@
-import React, { useState } from "react";
+import React, { useContext, useState, useEffect, useLayoutEffect } from "react";
 import GET_ALL_USER_HABIT from "../lib/apollo/queries/getHabits";
 import DELETE_HABIT from "../lib/apollo/mutations/deleteHabit";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useLazyQuery, useQuery } from "@apollo/client";
 import Head from "next/head";
 import EditHabit from "../components/EditHabit";
+import { Context } from "../context";
+
 function HabitList() {
-    const [show, setShow] = useState(false)
-    const [habit, setHabit] = useState({})
+    const { state } = useContext(Context);
+    const [show, setShow] = useState(false);
+    const [habit, setHabit] = useState({});
     const [habitCount, setHabitCount] = useState(5);
     const [deleteHabit] = useMutation(DELETE_HABIT);
     const handleShow = (habit) => {
         setShow(true);
-        setHabit(habit)
-    }
+        setHabit(habit);
+    };
     const HanldeShowModal = (state) => setShow(state);
 
-    const { loading, data } = useQuery(
-        GET_ALL_USER_HABIT,
-        {
-            variables: { userID: "OekgvAyGIbRoEBYZAOZJOTm8JaA3", first: habitCount },
-        },
-        {
-            fetchPolicy: "no-cache",
-        }
-    );
+    const { loading, error, data } =
+        useQuery(GET_ALL_USER_HABIT, {
+
+            variables: { userID: state.user.id, first: habitCount },
+        });
     const handleDeleteHabit = (habitId) => {
         deleteHabit({ variables: { habitId } });
     };
 
-    console.log(data);
-    if (loading) return <p>Loading...</p>;
 
+
+    if (loading)
+        return (
+            <div className="d-flex justify-content-center">
+                <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
     return (
         <>
             <Head>
@@ -59,7 +65,12 @@ function HabitList() {
                                         </td>
                                         <td>{habit.description}</td>
                                         <td>
-                                            <button onClick={() => handleShow(habit)} className="btn btn-sm btn-light">✏️</button>
+                                            <button
+                                                onClick={() => handleShow(habit)}
+                                                className="btn btn-sm btn-light"
+                                            >
+                                                ✏️
+                                            </button>
                                         </td>
                                         <td>
                                             <button
@@ -74,9 +85,12 @@ function HabitList() {
                             })}
                     </tbody>
                 </table>
-
             </div>
-            < EditHabit habit={habit} status={show} HanldeShowModal={HanldeShowModal} />
+            <EditHabit
+                habit={habit}
+                status={show}
+                HanldeShowModal={HanldeShowModal}
+            />
         </>
     );
 }

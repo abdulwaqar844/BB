@@ -1,28 +1,43 @@
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
 import { auth } from "../../lib/firebase";
-
+import { Context } from "./../../context";
 function BasicExample() {
-  const router = useRouter()
-  const [authUser, setauthUser] = useState(null);
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setauthUser(user);
-        // const uid = user.uid;u
-        // ...
+  const { state, dispatch } = useContext(Context);
+  const router = useRouter();
+
+  onAuthStateChanged(
+    auth,
+    (user) => {
+      if (user) {       
+        dispatch({
+          type: "LOGGED_IN_USER",
+          payload: {
+            id: user.uid,
+            email: user.email,
+            name: user.displayName,
+          },
+        })
       } else {
-        setauthUser(null)
+        dispatch({
+          type: "LOGGED_IN_USER",
+          payload: null,
+        })
       }
-    }, [router, authUser]);
-    // if (authUser) router.push("/");
-  });
+    },
+
+  );
+
   const HandleSignout = () => {
     signOut(auth)
       .then(() => {
-        localStorage.removeItem("userID");
+        dispatch({
+          type: "LOGGED_IN_USER",
+          payload: null,
+        })
+        // Update Other Dispatch FN
       })
       .catch((error) => { });
   };
@@ -44,33 +59,46 @@ function BasicExample() {
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          {authUser ? (
+          {state.user ? (<>
             <ul className="navbar-nav m-auto mb-2 mb-lg-0">
               <li className="nav-item">
                 <Link href="/" className="nav-link active">
                   Home
                 </Link>
-              </li> <li className="nav-item">
+              </li>
+              <li className="nav-item">
                 <Link href="/habit-list" className="nav-link active">
                   Habit
                 </Link>
               </li>
+            </ul>
+            <div className="btn-group dropstart">
+            <button
+              className="btn btn-secondary btn-sm dropdown-toggle "
+              type="button"
+              data-bs-toggle="dropdown"
 
-              <li className="nav-item">
+
+              aria-expanded="false"
+            >
+              {state?.user.name ? state.user.name : state.user.email}
+            </button>
+            <ul className="dropdown-menu dropdown-menu-light bg-danger">
+              <li className="nav-item ">
                 <button
-                  onClick={HandleSignout} className="btn-danger btn">
+                  onClick={HandleSignout}
+                  className='btn btn-sm  text-light'
+                >
                   Logout
                 </button>
               </li>
             </ul>
+          </div></>
+            
           ) : (
             <ul className="navbar-nav m-auto mb-2 mb-lg-0">
-              {" "}
-              <li className="nav-item">
-                <Link href="/" className="nav-link active">
-                  Home
-                </Link>
-              </li>{" "}
+
+
               <li className="nav-item">
                 <Link href="/login" className="nav-link active">
                   Login
@@ -83,6 +111,20 @@ function BasicExample() {
               </li>
             </ul>
           )}
+         
+
+          {/* <span className="navbar-text">
+            Signed In :  {state?.user.name}
+          </span> 
+          
+          
+            <li className="nav-item">
+                <button
+                  onClick={HandleSignout} className=" btn">
+                  Logout
+                </button>
+              </li>
+          */}
         </div>
       </div>
     </nav>

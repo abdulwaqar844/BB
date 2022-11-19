@@ -1,9 +1,12 @@
 import { useMutation } from "@apollo/client";
+import { useContext } from "react";
 import SET_DAILY_HABIT from "../lib/apollo/mutations/setDailyHabit";
 import GET_ALL_USER_HABIT from "../lib/apollo/queries/getHabits";
+import { Context } from "./../context";
 
 function DayHabitSquare({ day, habitId }) {
   const { done, disabled } = day;
+  const { state, dispatch } = useContext(Context);
 
   const [setDailyHabit, { loading, data, error }] = useMutation(
     SET_DAILY_HABIT,
@@ -24,7 +27,7 @@ function DayHabitSquare({ day, habitId }) {
         habitId,
         date: day.date,
         done: !done,
-        userID: "OekgvAyGIbRoEBYZAOZJOTm8JaA3",
+        userID: state.user.id,
       },
     });
   };

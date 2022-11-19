@@ -106,6 +106,19 @@ export const resolvers = {
         throw error;
       }
     },
+    editHabit: async (_, args) => {
+      try {
+        await updateDoc(doc(db, "DailyHabits", args.habitId), {
+          userID: args.userID,
+          title: args.title,
+          description: args.description,
+          starred: args.starred,
+        });
+        return args.habitId;
+      } catch (error) {
+        throw error;
+      }
+    },
     setMood: async (_, args) => {
       try {
         const formatedDate = new Date(args.date).toISOString().split("T")[0];

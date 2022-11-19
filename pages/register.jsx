@@ -42,21 +42,16 @@ function Register() {
       setError("Password does not match");
     }
   };
-  setTimeout(() => {
-    setError(null);
-  }, 9000);
-  console.log(loading);
+
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         router.push("/");
-        // const uid = user.uid;
-        // ...
+
       }
     });
-    // if (authUser) router.push("/");
-  }, [loading, router]);
+  }, []);
   return (<>
     <Head>
       <title>Register Now</title>

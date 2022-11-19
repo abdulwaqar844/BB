@@ -49,7 +49,14 @@ export const typeDefs = gql`
     ): String
     setDailyHabit(habitId: ID!, date: String!, userID: ID!): String
     deleteHabit(habitId: ID!): String
-    setMood(date: String , type: MoodTypes!, userID: String!): Mood
+    editHabit(
+      habitId: ID!
+      title: String
+      description: String
+      starred: Boolean
+      userID: ID!
+    ): String
+    setMood(date: String, type: MoodTypes!, userID: String!): Mood
   }
 `;
 

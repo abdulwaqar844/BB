@@ -1,8 +1,9 @@
 import { useMutation } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
+import { Context } from "./../context";
 import CREATE_NEW_HABIT from "../lib/apollo/mutations/createHabit";
 import GET_ALL_USER_HABIT from "../lib/apollo/queries/getHabits";
 function CreateHabit({ status, HanldeShowModal }) {
@@ -10,10 +11,15 @@ function CreateHabit({ status, HanldeShowModal }) {
   const [starred, setStarred] = useState(false);
   const [err, setErr] = useState(false);
   const [habitDescription, setHabitDescription] = useState("");
+  const { state, dispatch } = useContext(Context);
+
   const handleClose = () => HanldeShowModal(false);
-  const [createHabit, { data, loading, error }] = useMutation(CREATE_NEW_HABIT , {
-    refetchQueries: [GET_ALL_USER_HABIT],
-  });
+  const [createHabit, { data, loading, error }] = useMutation(
+    CREATE_NEW_HABIT,
+    {
+      refetchQueries: [GET_ALL_USER_HABIT],
+    }
+  );
   const handleSubmit = (e) => {
     if (habitTitle === "") {
       setErr(true);
@@ -29,7 +35,7 @@ function CreateHabit({ status, HanldeShowModal }) {
       variables: {
         title: habitTitle,
         description: habitDescription,
-        userID: "OekgvAyGIbRoEBYZAOZJOTm8JaA3",
+        userID: state.user.id,
         starred: starred,
       },
     });

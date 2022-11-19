@@ -1,9 +1,11 @@
 import { useMutation } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
-import CREATE_NEW_HABIT from "../lib/apollo/mutations/createHabit";
+import { Context } from "./../context";
+
+import EDIT_HABIT from "../lib/apollo/mutations/editHabit";
 import GET_ALL_USER_HABIT from "../lib/apollo/queries/getHabits";
 function EditHabit({ habit, status, HanldeShowModal }) {
   const [habitTitle, setHabitTitle] = useState("");
@@ -11,8 +13,10 @@ function EditHabit({ habit, status, HanldeShowModal }) {
   const [err, setErr] = useState(false);
   const [habitDescription, setHabitDescription] = useState("");
   const handleClose = () => HanldeShowModal(false);
-  const [createHabit, { data, loading, error }] = useMutation(
-    CREATE_NEW_HABIT,
+    const { state, dispatch } = useContext(Context);
+
+  const [editHabit] = useMutation(
+    EDIT_HABIT,
     {
       refetchQueries: [GET_ALL_USER_HABIT],
     }
@@ -28,11 +32,12 @@ function EditHabit({ habit, status, HanldeShowModal }) {
     e.preventDefault();
     setHabitDescription("");
     setHabitTitle("");
-    createHabit({
+    editHabit({
       variables: {
+        habitId: habit.id,
         title: habitTitle,
         description: habitDescription,
-        userID: "OekgvAyGIbRoEBYZAOZJOTm8JaA3",
+        userID: state.user.id,
         starred: starred,
       },
     });
@@ -44,7 +49,7 @@ function EditHabit({ habit, status, HanldeShowModal }) {
     <>
       <Modal show={status} onHide={handleClose}>
         <Modal.Header>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>Edit Habit</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>

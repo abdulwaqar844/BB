@@ -1,49 +1,57 @@
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
-  updateProfile,
 } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import Head from "next/head";
+import { Context } from "../context";
 
 function Login() {
+  const { state, dispatch } = useContext(Context);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-
   const router = useRouter();
 
   const HandleSubmit = (event) => {
     setError(null);
-
     event.preventDefault();
-
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
+        console.log("In Login", userCredential.user);
         setLoading(false);
+        dispatch({
+          type: "LOGGED_IN_USER",
+          payload: {
+            id: userCredential.user.uid,
+            email: userCredential.user.email,
+            name: userCredential.user.displayName,
+          },
+        })
         router.push("/");
+        console.log("User Credentials", userCredential)
         const user = userCredential.user;
+
+        console.log("User in Singing fin", user)
         // ...
       })
       .catch((error) => {
         setLoading(false);
         const errorCode = error.code;
-      
+
         if (errorCode === "auth/wrong-password") {
           setError("Incorrect Password ");
-          //  block of code to be executed if condition1 is true
         } else if (errorCode === "auth/user-not-found") {
           setError("User not found");
 
-          //  block of code to be executed if the condition1 is false and condition2 is true
         } else {
           setError("Invailid Credentials");
 
-          //  block of code to be executed if the condition1 is false and condition2 is false
         }
 
 
@@ -51,24 +59,13 @@ function Login() {
       });
   };
 
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        router.push("/");
-        // const uid = user.uid;
-        // ...
-      }
-    });
-    // if (authUser) router.push("/");
-  }, [loading, router]);
-  setTimeout(() => {
-    setError(null);
-  }, 9000);
+
+
 
   return (<>
     <Head>
       <title>Login</title>
-    
+
     </Head>
 
     <div className="container text-center">
