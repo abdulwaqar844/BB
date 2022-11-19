@@ -19,30 +19,28 @@ export default function Home() {
   const HanldeShowModal = (state) => setShow(state);
 
   const handleShow = () => setShow(true);
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/login");
+      }
+    });
+  }, []);
 
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      router.push("/login");
-    }
-  });
 
   const { loading, data } = useQuery(
     GET_ALL_USER_HABIT,
     {
-      variables: { userID: state?.user.id, first: habitCount },
+      variables: { userID: state?.user?.id, first: habitCount },
     },
     {
       fetchPolicy: "no-cache",
     }
   );
-  if (loading && state.user.id)
-    return (
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    );
+  // if (loading )
+  //   return (
+
+  //   );
   return (
     <div>
       <Head>
@@ -61,6 +59,11 @@ export default function Home() {
                 Create Habit
               </button>
             </div>
+            {loading && loading ? (<div className="d-flex justify-content-center">
+              <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>) : null}
             {data &&
               data.habits.map((habit, index) => {
                 return (

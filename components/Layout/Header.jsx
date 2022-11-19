@@ -11,7 +11,7 @@ function BasicExample() {
   onAuthStateChanged(
     auth,
     (user) => {
-      if (user) {       
+      if (user) {
         dispatch({
           type: "LOGGED_IN_USER",
           payload: {
@@ -72,29 +72,15 @@ function BasicExample() {
                 </Link>
               </li>
             </ul>
-            <div className="btn-group dropstart">
-            <button
-              className="btn btn-secondary btn-sm dropdown-toggle "
-              type="button"
-              data-bs-toggle="dropdown"
+            <div className="btn-group ">
+              <button
+                onClick={HandleSignout}
+                className='btn btn-sm btn-danger  text-light'
+              >
+                Signout @  {state.user.name}
+              </button>
+            </div></>
 
-
-              aria-expanded="false"
-            >
-              {state?.user.name ? state.user.name : state.user.email}
-            </button>
-            <ul className="dropdown-menu dropdown-menu-light bg-danger">
-              <li className="nav-item ">
-                <button
-                  onClick={HandleSignout}
-                  className='btn btn-sm  text-light'
-                >
-                  Logout
-                </button>
-              </li>
-            </ul>
-          </div></>
-            
           ) : (
             <ul className="navbar-nav m-auto mb-2 mb-lg-0">
 
@@ -111,7 +97,7 @@ function BasicExample() {
               </li>
             </ul>
           )}
-         
+
 
           {/* <span className="navbar-text">
             Signed In :  {state?.user.name}

@@ -5,8 +5,13 @@ import { useMutation, useLazyQuery, useQuery } from "@apollo/client";
 import Head from "next/head";
 import EditHabit from "../components/EditHabit";
 import { Context } from "../context";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../lib/firebase";
+import { useRouter } from "next/router";
 
 function HabitList() {
+    const router = useRouter();
+
     const { state } = useContext(Context);
     const [show, setShow] = useState(false);
     const [habit, setHabit] = useState({});
@@ -21,22 +26,21 @@ function HabitList() {
     const { loading, error, data } =
         useQuery(GET_ALL_USER_HABIT, {
 
-            variables: { userID: state.user.id, first: habitCount },
+            variables: { userID: state?.user?.id, first: habitCount },
         });
     const handleDeleteHabit = (habitId) => {
         deleteHabit({ variables: { habitId } });
     };
 
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+          if (!user) {
+            router.push("/login");
+          }
+        });
+      }, []);
 
-
-    if (loading)
-        return (
-            <div className="d-flex justify-content-center">
-                <div className="spinner-border" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                </div>
-            </div>
-        );
+   
     return (
         <>
             <Head>
@@ -44,6 +48,11 @@ function HabitList() {
             </Head>
             <div className="container px-5 py-4">
                 <p className="h4 text-center border-bottom pb-2">All Habit Lists</p>
+                {loading && loading ? (<div className="d-flex justify-content-center">
+                        <div className="spinner-border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </div>
+                    </div>) : null}
                 <table className="table">
                     <thead>
                         <tr>
@@ -54,7 +63,9 @@ function HabitList() {
                             <th scope="col">Delete</th>
                         </tr>
                     </thead>
+               
                     <tbody>
+
                         {data &&
                             data.habits.map((habit, index) => {
                                 return (
