@@ -38,7 +38,10 @@ function BasicExample() {
           payload: null,
         })
         // Update Other Dispatch FN
-      })
+        router.push('/login')
+      }
+      
+      )
       .catch((error) => { });
   };
   return (
