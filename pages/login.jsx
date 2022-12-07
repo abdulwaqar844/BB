@@ -23,7 +23,6 @@ function Login() {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         router.push('/')
-        console.log(userCredential);
       })
       .catch((error) => {
         const errorCode = error.code;

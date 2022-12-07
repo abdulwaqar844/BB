@@ -14,8 +14,7 @@ function HabitList() {
   const [show, setShow] = useState(false);
   const [habit, setHabit] = useState({});
   const [habitCount, setHabitCount] = useState(5);
-  console.log("User", user)
-  console.log("loading", loading)
+ 
   const [deleteHabit] = useMutation(DELETE_HABIT, {
     refetchQueries: [
       {

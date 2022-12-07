@@ -14,7 +14,7 @@ function App() {
       
   
       {/* <ClockIcon /> */}
-      <p className="h4 py-3" >       
+      <p className="h5 py-2 text-light" >       
 
         {dateState.toLocaleString("en-US", {
           second: "numeric",
@@ -23,7 +23,7 @@ function App() {
           hour12: true,
         })}
       </p>
-      <p className="h4 py-3" >       
+      <p className="h3 py-3 text-light" >       
         {dateState.toLocaleDateString("en-GB", {
           day: "numeric",
           month: "short",
