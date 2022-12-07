@@ -18,11 +18,14 @@ A New user can register his account and login to portal. Then A User can add his
 ### To run locallay
 
 Download source code of this project and install dependency by running
-`npm instal`
 
-    or
+```bash
 
-    `yarn`
+npm instal
+or
+yarn
+
+```
 
 After installing dependency run
 `npm run dev`

@@ -4,23 +4,24 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import { Context } from "./../context";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 import EDIT_HABIT from "../lib/apollo/mutations/editHabit";
 import GET_ALL_USER_HABIT from "../lib/apollo/queries/getHabits";
+import { auth } from "../lib/firebase";
 function EditHabit({ habit, status, HanldeShowModal }) {
+  const [user, loading] = useAuthState(auth);
+
   const [habitTitle, setHabitTitle] = useState("");
   const [starred, setStarred] = useState(false);
   const [err, setErr] = useState(false);
   const [habitDescription, setHabitDescription] = useState("");
   const handleClose = () => HanldeShowModal(false);
-    const { state, dispatch } = useContext(Context);
+  const { state, dispatch } = useContext(Context);
 
-  const [editHabit] = useMutation(
-    EDIT_HABIT,
-    {
-      refetchQueries: [GET_ALL_USER_HABIT],
-    }
-  );
+  const [editHabit] = useMutation(EDIT_HABIT, {
+    refetchQueries: [GET_ALL_USER_HABIT],
+  });
   const handleSubmit = (e) => {
     if (habitTitle === "") {
       setErr(true);
@@ -37,7 +38,7 @@ function EditHabit({ habit, status, HanldeShowModal }) {
         habitId: habit.id,
         title: habitTitle,
         description: habitDescription,
-        userID: state.user.id,
+        userID: user?.uid,
         starred: starred,
       },
     });

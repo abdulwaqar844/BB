@@ -3,9 +3,9 @@ import React from "react";
 
 function Footer() {
   return (
-    <div className="container">
-      <footer className="py-3 my-4">
-        <ul className="nav justify-content-center border-bottom pb-3 mb-3">
+    <div className="container-fluid bg-dark py-0 my-0">
+      <footer className=" my-0">
+        <ul className="nav justify-content-center border-bottom py-3 pb-3 mb-3">
           <li className="nav-item">
           <Link href="/" className="nav-link active">
                 Home
@@ -17,7 +17,7 @@ function Footer() {
               </Link>
             </li>
         </ul>
-        <p className="text-center text-muted">© 2022 Company, Inc</p>
+        <p className="text-center text-muted py-0 my-0">© 2022 Company, Inc</p>
       </footer>
     </div>
   );

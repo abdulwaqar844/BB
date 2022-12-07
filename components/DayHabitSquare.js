@@ -1,12 +1,12 @@
 import { useMutation } from "@apollo/client";
-import { useContext } from "react";
 import SET_DAILY_HABIT from "../lib/apollo/mutations/setDailyHabit";
 import GET_ALL_USER_HABIT from "../lib/apollo/queries/getHabits";
-import { Context } from "./../context";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../lib/firebase";
 
-function DayHabitSquare({ day, habitId }) {
+function DayHabitSquare({ day, habitId }) {  const [user, loading] = useAuthState(auth);
+
   const { done, disabled } = day;
-  const { state, dispatch } = useContext(Context);
 
   const [setDailyHabit] = useMutation(SET_DAILY_HABIT, {
     refetchQueries: [GET_ALL_USER_HABIT],
@@ -24,7 +24,7 @@ function DayHabitSquare({ day, habitId }) {
         habitId,
         date: day.date,
         done: !done,
-        userID: state.user.id,
+        userID: user?.uid,
       },
     });
   };
@@ -34,16 +34,19 @@ function DayHabitSquare({ day, habitId }) {
     bg = "white";
     cursorStyle = "not-allowed";
   } else if (done) {
-    bg = "green";
+    bg = "rgb(117 218 151)";
     cursorStyle = "default";
   } else {
-    bg = "gray";
+    bg = "rgb(147 153 157)";
     cursorStyle = "pointer";
   }
 
   return (
     <div
-      style={{
+  
+    >
+      <p 
+       style={{
         border: `1px solid gray`,
         width: "40px",
         height: "40px",
@@ -56,9 +59,7 @@ function DayHabitSquare({ day, habitId }) {
         margin: "3px",
         cursor: cursorStyle,
       
-      }}
-    >
-      <p onDoubleClick={handleSetHabit}>{new Date(day.date).getDate()} </p>
+      }} onDoubleClick={handleSetHabit}>{new Date(day.date).getDate()} </p>
     </div>
   );
 }

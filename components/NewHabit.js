@@ -6,7 +6,10 @@ import Modal from "react-bootstrap/Modal";
 import { Context } from "./../context";
 import CREATE_NEW_HABIT from "../lib/apollo/mutations/createHabit";
 import GET_ALL_USER_HABIT from "../lib/apollo/queries/getHabits";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../lib/firebase";
 function CreateHabit({ status, HanldeShowModal }) {
+  const [user, loading] = useAuthState(auth);
   const [habitTitle, setHabitTitle] = useState("");
   const [starred, setStarred] = useState(false);
   const [err, setErr] = useState(false);
@@ -14,7 +17,7 @@ function CreateHabit({ status, HanldeShowModal }) {
   const { state, dispatch } = useContext(Context);
 
   const handleClose = () => HanldeShowModal(false);
-  const [createHabit, { data, loading, error }] = useMutation(
+  const [createHabit, { data, loading :LaodingQuery, error }] = useMutation(
     CREATE_NEW_HABIT,
     {
       refetchQueries: [GET_ALL_USER_HABIT],
@@ -35,7 +38,7 @@ function CreateHabit({ status, HanldeShowModal }) {
       variables: {
         title: habitTitle,
         description: habitDescription,
-        userID: state.user.id,
+        userID: user?.uid,
         starred: starred,
       },
     });

@@ -44,14 +44,14 @@ function Register() {
   };
 
 
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        router.push("/");
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       router.push("/");
 
-      }
-    });
-  }, []);
+  //     }
+  //   });
+  // }, []);
   return (<>
     <Head>
       <title>Register Now</title>

@@ -1,50 +1,52 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useEffect, useState } from "react";
 import { auth } from "../lib/firebase";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import GET_ALL_USER_HABIT from "../lib/apollo/queries/getHabits";
 import Habits from "../components/Habits";
-// import TimeAndDate from "../components/TimeAndDate";
 import Modal from "../components/NewHabit";
-import { Context } from "../context";
+import { useAuthState } from "react-firebase-hooks/auth";
 import dynamic from "next/dynamic";
-const TimeAndDate = dynamic(
-  () => import('../components/TimeAndDate'),
-  { ssr: false }
-)
+const TimeAndDate = dynamic(() => import("../components/TimeAndDate"), {
+  ssr: false,
+});
 export default function Home() {
-  const { state, dispatch } = useContext(Context);
-
+  const [user, loading] = useAuthState(auth);
   const [habitCount, setHabitCount] = useState(5);
   const router = useRouter();
   const [show, setShow] = useState(false);
   const HanldeShowModal = (state) => setShow(state);
 
   const handleShow = () => setShow(true);
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.push("/login");
+  const [getHabits, { error, data, loading: LoadingQueryResult }] =
+    useLazyQuery(
+      GET_ALL_USER_HABIT,
+      {
+        variables: { userID: user?.uid, first: habitCount },
+      },
+      {
+        fetchPolicy: "no-cache",
       }
-    });
-  }, []);
-
-
-  const { loading, data } = useQuery(
-    GET_ALL_USER_HABIT,
-    {
-      variables: { userID: state?.user?.id, first: habitCount },
-    },
-    {
-      fetchPolicy: "no-cache",
+    );
+  useEffect(() => {
+  
+    if (!user) router.push("/login");
+    if (user) {
+      getHabits();
     }
-  );
-  // if (loading )
-  //   return (
+  }, [user, loading]);
 
-  //   );
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <Head>
@@ -53,21 +55,25 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="container">
-        <div className="row">
-          <div className="col-md-10">    <div>
-            <p className="h3  text-center">Your Habits</p>
-          </div>
-            <div className="d-flex justify-content-center justify-content-center justify-content-md-end px-5 py-2"  >
-              <button className="btn btn-success " onClick={handleShow}>
-                Create Habit
+      <main className="container-fluid header py-4">
+        <div className="row ">
+          <div className="col-md-10">
+           
+            <div>
+              <p className="h3  text-center text-light">Track Your Progress </p>
+            </div>
+            <div className="d-flex justify-content-center justify-content-center justify-content-md-end px-5 py-2">
+              <button className="btn btn-info " onClick={handleShow}>
+                Add  Habit
               </button>
             </div>
-            {loading && loading ? (<div className="d-flex justify-content-center">
-              <div className="spinner-border" role="status">
-                <span className="visually-hidden">Loading...</span>
+            {LoadingQueryResult && LoadingQueryResult ? (
+              <div className="d-flex justify-content-center">
+                <div className="spinner-border" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
               </div>
-            </div>) : null}
+            ) : null}
             {data &&
               data.habits.map((habit, index) => {
                 return (
@@ -75,14 +81,12 @@ export default function Home() {
                     <Habits habit={habit} />
                   </div>
                 );
-              })}</div>
+              })}
+          </div>
           <div className="col-md-2">
-            < TimeAndDate />
+            <TimeAndDate />
           </div>
         </div>
-
-
-
 
         <Modal status={show} HanldeShowModal={HanldeShowModal} />
       </main>
