@@ -2,23 +2,24 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import {
-  onAuthStateChanged,
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { auth } from "./../lib/firebase";
-import Head from "next/head";
+import { useAuthState } from "react-firebase-hooks/auth";
+
+import { auth } from "../lib/firebase"; import Head from "next/head";
 function Register() {
+  const [user, loading] = useAuthState(auth);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loadingStat, setLoadingStat] = useState(false);
   const [passwordOne, setPasswordOne] = useState("");
   const [passwordTwo, setPasswordTwo] = useState("");
   const [error, setError] = useState(null);
   const router = useRouter();
 
   const HandleSubmit = (event) => {
-    setLoading(true);
+    setLoadingStat(true);
     event.preventDefault();
     if (passwordOne === passwordTwo) {
       createUserWithEmailAndPassword(auth, email, passwordOne)
@@ -26,13 +27,11 @@ function Register() {
           updateProfile(auth.currentUser, {
             displayName: name,
           });
-          setLoading(false);
+          setLoadingStat(false);
           router.push("/");
-          const user = userCredential.user;
-          // ...
         })
         .catch((error) => {
-          setLoading(false);
+          setLoadingStat(false);
           const errorCode = error.code;
           if (errorCode === "auth/email-already-in-use") {
             setError("Email already in use");
@@ -43,20 +42,16 @@ function Register() {
     }
   };
 
+  useEffect(() => {
 
-  // useEffect(() => {
-  //   onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       router.push("/");
+    if (user) router.push("/");
 
-  //     }
-  //   });
-  // }, []);
+  }, [user, loading]);
   return (<>
     <Head>
       <title>Register Now</title>
     </Head>
-    <div className="container text-center">
+    <div className="container-fluid header text-center">
       <div className="form-signin w-100 m-auto pt-5">
         <form onSubmit={HandleSubmit}>
           <img
@@ -66,7 +61,7 @@ function Register() {
             width="72"
             height="57"
           />
-          <h1 className="h3 mb-3 fw-normal">Please Register Now</h1>
+          <h1 className="h3 mb-3 text-light fw-bold">Please Register Now</h1>
           <div className="form-floating mb-2">
             <input
               type="text"
@@ -79,7 +74,7 @@ function Register() {
           </div>
           <div className="form-floating mb-2">
             <input
-              readOnly={loading}
+              readOnly={loadingStat}
               type="email"
               className="form-control"
               placeholder="name@example.com"
@@ -110,7 +105,7 @@ function Register() {
           </div>
           <p className="text-danger">{error} </p>
           <button
-            disabled={loading}
+            disabled={loadingStat}
             className="w-100 btn btn-lg btn-primary"
             type="submit"
           >

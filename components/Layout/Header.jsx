@@ -81,8 +81,8 @@ function BasicExample() {
                 </Link>
               </li>
             </ul>
-            <div class="navbar-nav">
-              <div class="nav-item text-nowrap">
+            <div class="navbar-nav bg-light">
+              <div class=" text-nowrap">
                 <button class="btn btn-md px-3 btn-danger"
                   onClick={HandleSignout}
                   className='btn '
