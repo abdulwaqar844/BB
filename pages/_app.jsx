@@ -4,7 +4,6 @@ import { ApolloProvider } from "@apollo/client";
 import { useApollo } from "../lib/apollo";
 import "./../styles/custom.scss";
 import { useEffect } from "react";
-import { Provider } from "../context";
 export default function App({ Component, pageProps }) {
   const apolloClient = useApollo(pageProps.initialApolloState);
   useEffect(() => {
@@ -12,10 +11,9 @@ export default function App({ Component, pageProps }) {
   }, []);
   return (
     <ApolloProvider client={apolloClient}>
-      <Provider>
         <Header />
         <Component {...pageProps} />
-        <Footer /></Provider>
+        <Footer />
     </ApolloProvider>
 
 

@@ -1,12 +1,10 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useContext } from "react";
+import { useEffect } from "react";
 import { auth } from "../../lib/firebase";
-import { Context } from "./../../context";
-import { getAuth, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 function BasicExample() {
-  // const { state, dispatch } = useContext(Context);
   const [user, loading, error] = useAuthState(auth);
 
   const router = useRouter();
@@ -21,10 +19,14 @@ function BasicExample() {
 
   };
 
+  useEffect(() => {
+    if (user) router.push("/");
+    if (!user && !loading) router.push("/login");
+  }, [user, loading]);
 
   if (loading) {
     return (
-      <nav className="navbar navbar-expand-lg bg-light">
+      <nav className="navbar navbar-expand-lg navbar-dark sticky-top bg-dark ">
         <div className="container-fluid">
           <a className="navbar-brand" href="#">
             Habit Tracker

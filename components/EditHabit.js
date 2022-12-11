@@ -1,9 +1,8 @@
 import { useMutation } from "@apollo/client";
-import React, { useContext, useState } from "react";
+import React from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
-import { Context } from "./../context";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 import EDIT_HABIT from "../lib/apollo/mutations/editHabit";
@@ -17,7 +16,6 @@ function EditHabit({ habit, status, HanldeShowModal }) {
   const [err, setErr] = useState(false);
   const [habitDescription, setHabitDescription] = useState("");
   const handleClose = () => HanldeShowModal(false);
-  const { state, dispatch } = useContext(Context);
 
   const [editHabit] = useMutation(EDIT_HABIT, {
     refetchQueries: [GET_ALL_USER_HABIT],

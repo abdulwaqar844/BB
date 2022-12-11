@@ -13,7 +13,7 @@ const TimeAndDate = dynamic(() => import("../components/TimeAndDate"), {
 });
 export default function Home() {
   const [user, loading] = useAuthState(auth);
-  const [habitCount, setHabitCount] = useState(5);
+  const [habitCount, setHabitCount] = useState(10);
   const router = useRouter();
   const [show, setShow] = useState(false);
   const HanldeShowModal = (state) => setShow(state);
@@ -30,19 +30,23 @@ export default function Home() {
       }
     );
   useEffect(() => {
-  
-    if (!user) router.push("/login");
     if (user) {
       getHabits();
+    }
+    if (!user && !loading) {
+      router.push("/login");
     }
   }, [user, loading]);
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
+      <div className="d-flex justify-content-center align-items-center header">
+        <div className="form-signin  m-auto pt-3">
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
         </div>
+
       </div>
     );
   }
@@ -58,13 +62,12 @@ export default function Home() {
       <main className="container-fluid header py-4">
         <div className="row ">
           <div className="col-md-10">
-           
             <div>
               <p className="h3  text-center text-light">Track Your Progress </p>
             </div>
             <div className="d-flex justify-content-center justify-content-center justify-content-md-end px-5 py-2">
               <button className="btn btn-info " onClick={handleShow}>
-                Add  Habit
+                Add Habit
               </button>
             </div>
             {LoadingQueryResult && LoadingQueryResult ? (

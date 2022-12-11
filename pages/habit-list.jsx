@@ -13,8 +13,8 @@ function HabitList() {
   const [user, loading] = useAuthState(auth);
   const [show, setShow] = useState(false);
   const [habit, setHabit] = useState({});
-  const [habitCount, setHabitCount] = useState(5);
- 
+  const [habitCount, setHabitCount] = useState(10);
+
   const [deleteHabit] = useMutation(DELETE_HABIT, {
     refetchQueries: [
       {
@@ -31,15 +31,15 @@ function HabitList() {
   const HanldeShowModal = (state) => setShow(state);
 
   const [getHabits, { error, data, loading: LoadingQueryResult }] =
-  useLazyQuery(
-    GET_ALL_USER_HABIT,
-    {
-      variables: { userID: user?.uid, first: habitCount },
-    },
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
+    useLazyQuery(
+      GET_ALL_USER_HABIT,
+      {
+        variables: { userID: user?.uid, first: habitCount },
+      },
+      {
+        fetchPolicy: "no-cache",
+      }
+    );
   const handleDeleteHabit = (habitId) => {
     deleteHabit(
       { variables: { habitId } }
@@ -48,23 +48,29 @@ function HabitList() {
   };
 
   useEffect(() => {
-    if (loading) {
-      return;
-      // return <h2>Loading</h2>;
-    }
-    if (!user) router.push("/login");
+
     if (user) {
       getHabits();
     }
+    if (!user && !loading) router.push("/login");
+
   }, [user, loading]);
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
+      <>
+        <Head>
+          <title>All Habit List | Habit Tracker App</title>
+        </Head>
+        <div className="container-fluid header py-4 px-5 py-4 d-flex justify-content-center align-items-center">
+          <div className="form-signin  m-auto pt-3">
+            <div className="spinner-border text-success" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
+        </div></>
+
     );
   }
   return (
@@ -76,7 +82,7 @@ function HabitList() {
         <p className="h4 text-center border-bottom pb-2 text-light">All Habit Lists</p>
         {LoadingQueryResult && LoadingQueryResult ? (
           <div className="d-flex justify-content-center">
-            <div className="spinner-border" role="status">
+            <div className="spinner-border text-success" role="status">
               <span className="visually-hidden">Loading...</span>
             </div>
           </div>
